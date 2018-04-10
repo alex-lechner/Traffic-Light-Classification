@@ -4,6 +4,6 @@ data/
 test/
 orig-rcnn-model/
 orig-rcnn-model.zip
-ssd_inception_v2_coco_2017_11_17/
-ssd_inception_v2_coco_2017_11_17.tar.gz
+ssd_inception_v2_coco_11_06_2017/
+ssd_inception_v2_coco_11_06_2017.tar.gz
 notes-for-readme.txt
