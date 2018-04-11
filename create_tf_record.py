@@ -105,8 +105,8 @@ def create_tf_record(data, label_map_dict, is_yaml=False, ignore_difficult_insta
         encoded_jpg = fid.read()
     encoded_jpg_io = io.BytesIO(encoded_jpg)
     image = PIL.Image.open(encoded_jpg_io)
-    if image.format != 'JPEG':
-        raise ValueError('Image format not JPEG')
+    if image.format != 'JPG':
+        raise ValueError('Image format not JPG')
     key = hashlib.sha256(encoded_jpg).hexdigest()
 
     xmin = []

@@ -7,3 +7,6 @@ orig-rcnn-model.zip
 ssd_inception_v2_coco_11_06_2017/
 faster_rcnn_inception_v2_coco_2018_01_28/
 notes-for-readme.txt
+models/train/
+fine_tuned/rcnn/saved_model/
+fine_tuned/ssd/saved_model/
