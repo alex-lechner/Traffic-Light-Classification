@@ -5,7 +5,7 @@ import yaml
 import PIL.Image
 import tensorflow as tf
 import matplotlib.image as mpimg
-from utils import dataset_util, label_map_util
+from object_detection.utils import dataset_util, label_map_util
 from lxml import etree
 
 flags = tf.app.flags
@@ -105,7 +105,7 @@ def create_tf_record(data, label_map_dict, is_yaml=False, ignore_difficult_insta
         encoded_jpg = fid.read()
     encoded_jpg_io = io.BytesIO(encoded_jpg)
     image = PIL.Image.open(encoded_jpg_io)
-    if image.format != 'JPG':
+    if image.format != 'JPEG':
         raise ValueError('Image format not JPG')
     key = hashlib.sha256(encoded_jpg).hexdigest()
 
@@ -185,7 +185,8 @@ def main(_):
     dataset_list = FLAGS.data_dir.split(',')
     for dataset in dataset_list:
         if dataset.split('.')[-1] == r'yaml':
-            ## FOR BOSCH
+            ## FOR YAML
+            print('yaml')
             examples_list = get_imgs_from_yaml(dataset)
             for example in examples_list:
                 tf_example = create_tf_record(
@@ -201,8 +202,9 @@ def main(_):
                 with tf.gfile.GFile(path, 'r') as fid:
                     xml_str = fid.read()
                 xml = etree.fromstring(xml_str)
-                data = dataset_util.recursive_parse_xml_to_dict(xml)[
-                    'annotation']
+                data = dataset_util.recursive_parse_xml_to_dict(xml)['annotation']
+                # convert the path so the current file directory
+                data['path'] = os.path.join(os.path.abspath(dataset), os.path.basename(data['path']))
 
                 tf_example = create_tf_record(
                     data, label_map_dict, ignore_difficult_instances=FLAGS.ignore_difficult_instances)
