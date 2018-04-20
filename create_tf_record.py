@@ -186,7 +186,6 @@ def main(_):
     for dataset in dataset_list:
         if dataset.split('.')[-1] == r'yaml':
             ## FOR YAML
-            print('yaml')
             examples_list = get_imgs_from_yaml(dataset)
             for example in examples_list:
                 tf_example = create_tf_record(

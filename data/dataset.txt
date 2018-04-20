@@ -1,0 +1,11 @@
+Sources:
+http://www.lara.prd.fr/benchmarks/trafficlightsrecognition
+https://hci.iwr.uni-heidelberg.de/node/6132
+https://drive.google.com/uc?id=0B-Eiyn-CUQtxdUZWMkFfQzdObUE&export=download (https://github.com/coldKnight/TrafficLight_Detection-TensorFlowAPI)
+Stats:
+Bosch train: 5093 samples, 1280x720
+Bosch test: 8334 samples, 1280x720
+Bosch additional: 210 samples, 1280x720
+
+Udacity testarea: 155 samples, 1368x1096
+Udacity sim: 425 samples, 800x600

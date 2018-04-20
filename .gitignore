@@ -1,7 +1,7 @@
 __pycache__/
 .ipynb_checkpoints/
-data/
-test/
-notes-for-readme.txt
-fine_tuned/
-model-download.txt
+models/rcnn_resnet101
+data/*
+!data/udacity_label_map.pbtxt
+!data/bosch_label_map.pbtxt
+!data/dataset.txt
