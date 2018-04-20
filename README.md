@@ -50,6 +50,7 @@ The goals/steps of this project are the following:
 [tf setup linux]: #linux
 [epratheeban github]: https://github.com/EdjeElectronics/TensorFlow-Object-Detection-API-Tutorial-Train-Multiple-Objects-Windows-10/issues/11
 [aws inbound rules]: ./imgs/aws-inbound-rules.jpg
+
 ---
 
 ## Table of Contents
