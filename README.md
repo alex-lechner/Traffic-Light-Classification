@@ -29,7 +29,7 @@ The goals/steps of this project are the following:
 [tfrecord file]: #23-create-a-tfrecord-file
 [clifton pereira]: https://github.com/ExtEng
 [label map]: ./data/udacity_label_map.pbtxt
-[setup tensorflow]: #setup-tensorflow
+[set up tensorflow]: #set-up-tensorflow
 [create_tf_record]: create_tf_record.py
 [training section]: #training
 [protobuf win]: https://github.com/google/protobuf/releases
@@ -55,7 +55,7 @@ The goals/steps of this project are the following:
 
 ## Table of Contents
 1. [Introduction](#introduction)
-2. [Setup Tensorflow][setup tensorflow]
+2. [Set up Tensorflow][set up tensorflow]
     1. [Windows 10](#windows-10)
     2. [Linux][tf setup linux]
 3. [Datasets](#datasets)
@@ -71,24 +71,25 @@ The goals/steps of this project are the following:
     4. [Training the model](#4-training-the-model)
     5. [Freezing the graph](#5-freezing-the-graph)
 5. [Troubleshooting](#troubleshooting)
+6. [Summary](#summary)
 
 
 ## Introduction
 
-The goal of this project was to retrain a TensorFlow model on images of traffic lights in their different light states. The trained (frozen) graph was then used in the final capstone project of the Udacity Self_driving Car Engineer Nanodegree Program. Our project (and the implementation of the trained graph) can be found here: [Drive Safely Capstone Project][capstone project]
+The goal of this project was to retrain a TensorFlow model on images of traffic lights in their different light states. The trained model was then used in the final capstone project of the Udacity Self-Driving Car Engineer Nanodegree Program as a frozen inference graph. Our project (and the implementation of the frozen graph) can be found here: [Drive Safely Capstone Project][capstone project]
 
-The following guide is a detailed tutorial on how to set up the traffic classification project, to train the graph and to avoid the mistakes I did. For my project I've read [Daniel Stang's][daniel stang], [Anthony Sarkis'][anthony sarkis] and [Vatsal Srivastava's][vatsal srivastava] Medium posts on traffic light classification. I encourage you to read through them as well. However, even though they were comprehensible and gave a basic understanding of the problem the authors still missed the biggest and hardest part of the project: Setting up a training environment and retrain the Tensorflow model
+The following guide is a detailed tutorial on how to set up the traffic light classification project, to (re)train the TensorFlow model and to avoid the mistakes I did. For my project I've read [Daniel Stang's][daniel stang], [Anthony Sarkis'][anthony sarkis] and [Vatsal Srivastava's][vatsal srivastava] Medium posts on traffic light classification. I encourage you to read through them as well. However, even though they were comprehensible and gave a basic understanding of the problem the authors still missed the biggest and hardest part of the project: Setting up a training environment and retrain the Tensorflow model.
 
-I will now try to cover up all steps necessary from the beginning to the end to have a working classifier. Also, this tutorial is Windows-friendly since the project was done on Windows 10 for the most part.
+I will now try to cover up all steps necessary from the beginning to the end to have a working classifier. Also, this tutorial is Windows-friendly since the project was done on Windows 10 for the most part. I suggest reading through this tutorial first before following along.
 
-**If you run into any troubles or issues during this tutorial (and you probably will) please check the [Troubleshooting section](#troubleshooting)**
+**If you run into any errors during this tutorial (and you probably will) please check the [Troubleshooting section](#troubleshooting).**
 
-## Setup TensorFlow
-If a technical recruiter ever asks me "Describe the toughest technical problem you've worked on" my answer definitely will be "Get TensorFlow to work". Seriously, if someone from the TensorFlow team is reading this: Clean up your folder structure, use descriptive folder names, merge your READMEs and - more importantly - **fix your library!!!**
+## Set up TensorFlow
+If a technical recruiter ever asks me _"Describe the toughest technical problem you've worked on."_ my answer definitely will be _"Get TensorFlow to work!"_. Seriously, if someone from the TensorFlow team is reading this: Clean up your folder structure, use descriptive folder names, merge your READMEs and - more importantly - **fix your library!!!**
 
 But enough of Google bashing - they're doing a good job but the library still has teething troubles (and an user-**un**friendly installation setup).
 
-I will now show you how to install TensorFlow on Windows 10 and Linux. The Linux setup is easier and if you don't have a powerful GPU on your local machine I strongly recommend you to do the training on an AWS spot instance because this will save you a lot of time. However, you can do the basic stuff like data preparation and data preprocessing on your local machine but I suggest doing the training on an AWS instance. I will show you how to set up the training environment in the [Training section][training section].
+I will now show you how to install the TensorFlow 'models' repository on Windows 10 and Linux. The Linux setup is easier and if you don't have a powerful GPU on your local machine I strongly recommend you to do the training on an AWS spot instance because this will save you a lot of time. However, you can do the basic stuff like data preparation and data preprocessing on your local machine but I suggest doing the training on an AWS instance. I will show you how to set up the training environment in the [Training section][training section].
 
 ### Windows 10
 1. Install TensorFlow version 1.4 by executing ``pip install tensorflow==1.4`` in the Command Prompt (this assumes you have python.exe set in your PATH environment variable)
@@ -126,17 +127,17 @@ This is important because the code from the ``master`` branch won't work with Te
 
 6.  Navigate to the ``research`` folder and execute ``protoc object_detection/protos/*.proto --python_out=.``
 7.  Now execute ``export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim``
-8.  If step 7 executed without any error then execute ``python object_detection/builders/model_builder_test.py``
+8.  If the steps 6 & 7 executed without any errors then execute ``python object_detection/builders/model_builder_test.py``
 
 ## Datasets
 As always in deep learning: Before you start coding you need to gather the right datasets. For this project, you will need images of traffic lights with labeled bounding boxes.
-In sum there are 3 datasets you can use:
+In sum there are 4 datasets you can use:
 1. [Bosch Small Traffic Lights Dataset][bosch dataset]
 2. [LaRA Traffic Lights Recognition Dataset][lara dataset]
 3. Udacity's ROSbag file from Carla
 4. Traffic lights from Udacity's simulator
 
-I ended up using Udacity's ROSbag file only and if you carefully follow along with this tutorial the images from the ROSbag file will be enough to have a working classifier. There are two approaches on how to get the data from the ROSbag file (and from Udacity's Simulator):
+I ended up using Udacity's ROSbag file from Carla only and if you carefully follow along with this tutorial the images from the ROSbag file will be enough to have a working classifier for real-world AND simulator examples. There are two approaches on how to get the data from the ROSbag file (and from Udacity's simulator):
 
 ### 1. The Lazy Approach
 You can download Vatsal Srivastava's dataset and my dataset for this project. The images are already labeled and a [TFRecord file][tfrecord file] is provided as well:
@@ -152,7 +153,7 @@ My dataset is a little sparse (at least the amount of yellow traffic lights is s
 If you have enough time, love to label images, read tutorials about traffic light classification before this one or want to gather more data, then this is the way to go:
 
 #### 2.1 Extract images from a ROSbag file
-For the simulator data, my team colleague [Clifton Pereira][clifton pereira] drove around the track in the simulator and recorded a ROSbag file of his ride. Because Udacity provides the students with a ROSbag file from their Car named Carla where (our and) your capstone project will be tested on the code/procedure for extracting images will be (mostly) the same.
+For the simulator data, my team colleague [Clifton Pereira][clifton pereira] drove around the track in the simulator and recorded a ROSbag file of his ride. Because Udacity provides the students with a ROSbag file from their Car named Carla where (our and) your capstone project will be tested on the code/procedure for extracting images will be (mostly) the same. **The steps below assume you have ros-kinetic installed either on your local machine (if you have Linux as an operating system) or in a virtual environment (if you have Windows or Mac as an operating system)**
 
 1. Open a terminal and launch ROS by executing ``roscore``
 2. Open another terminal (but do NOT close or exit the first terminal!) and play the ROSbag file by executing ``rosbag play -l your_rosbag_file.bag``
@@ -163,7 +164,7 @@ For the simulator data, my team colleague [Clifton Pereira][clifton pereira] dro
     
     4.2. ...execute ``rosrun image_view image_saver _sec_per_frame:=0.01 image:=/image_raw`` if you have a ROSbag file from Udacity's Car Carla
 
-As you can see the difference is the rostopic after ``image:=``.`
+As you can see the difference is the rostopic after ``image:=``.
 
 These steps will extract the (camera) images from the ROSbag file into the folder where the code is executed. Please keep in mind that the ROSbag file is in an infinite loop and won't stop when the recording originally ended so it will automatically start from the beginning. If you think you have enough data you should interrupt one of the open terminals.
 
@@ -179,14 +180,14 @@ After you have your dataset you will need to label it by hand. For this process 
 
 Now you can start labeling your images. When you have labeled an image with a bounding box hit the ``Save`` button and the program will create a .xml file with a link to your labeled image and the coordinates of the bounding boxes.
 
-Pro tip: I'd recommend you to split your traffic light images into 3 folders: Green, Yellow, and Red. The advantage is that you can check ``Use default label`` and use ``Red`` as an input for your red traffic light images and the program will automatically choose ``Red`` as your label for your drawn bounding boxes.
+Pro tip: I'd recommend you to split your traffic light images into 3 folders: Green, Yellow, and Red. The advantage is that you can check ``Use default label`` and use e.g. ``Red`` as an input for your red traffic light images and the program will automatically choose ``Red`` as your label for your drawn bounding boxes.
 
 ![labeling a traffic light][labeling img] 
 
 #### 2.3 Create a TFRecord file
 Now that you have your labeled images you will need to create a TFRecord file in order to retrain a TensorFlow model. A TFRecord is a binary file format which stores your images and ground truth annotations. But before you can create this file you will need the following:
 1. A [``label_map.pbtxt``][label map] file which contains your labels (``Red``, ``Green``, ``Yellow`` & ``off``) with an ID (IDs must start at 1 instead of 0)
-2. [Setup Tenorflow][setup tensorflow]
+2. [Setup Tenorflow][set up tensorflow]
 3. A script which creates the TFRecord file for you (feel free to use my [``create_tf_record.py``][create_tf_record] file for this process)
 
 Please keep in mind that your ``label_map.pbtxt`` file can have more than 4 labels depending on your dataset. For example, if you're using the [Bosch Small Traffic Lights Dataset][bosch dataset] you will most likely have about 13 labels.
@@ -234,13 +235,13 @@ path/to
 ## Training
 
 ### 1. Choosing a model
-So far you should have a TFRecord file of the dataset(s) which you have either downloaded or created by yourself. Now it's time to select a model which you will train. You can see the stats of the Tensorflow models and [download them from the model zoo][models zoo]. I've trained in sum 3 TensorFlow models and compared them based on performance and precision:
+So far you should have a TFRecord file of the dataset(s) which you have either downloaded or created by yourself. Now it's time to select a model which you will train. You can [see the stats of and download the Tensorflow models from the model zoo][models zoo]. In sum I've trained 3 TensorFlow models and compared them based on their performance and precision:
 * [SSD Inception V2 Coco (11/06/2017)][ssd inception] Pro: Very fast, Con: Low precision
 * [Faster RCNN Inception V2 Coco (28/01/2018)][faster rcnn inception] Pro: Good precision, Con: Slow
 * [Faster RCNN Resnet101 Coco (11/06/2017)][faster rcnn resnet101] Pro: Highly Accurate, Con: Very slow
 
 Our team ended up using **Faster RCNN Inception V2 Coco** because it has good results for its performance.
-You may ask yourself why the date after the model's name is important. As mentioned in the setup section above, it's very important to check out a specific commit from the 'models' repository because the team has fixed broken models. That's why it is important. And if you don't like to see this result after a very long training session I encourage you to stick to the newest models or the ones I've linked above:
+You may ask yourself why the date after the model's name is important. As I've mentioned in the [TensorFlow set up section][set up tensorflow] above, it's very important to check out a specific commit from the 'models' repository because the team has fixed broken models. That's why it is important. And if you don't want to see the following results after a very long training session I encourage you to stick to the newest models or the ones I've linked above:
 
 ![bad performance][bad performance]
 
@@ -249,7 +250,7 @@ You get these result too if you have too few training steps. You can imagine how
 After you've downloaded a model, create a new folder e.g. ``models`` and unpack the model with [7-zip on Windows][7-zip win] or ``tar -xvzf your_tensorflow_model.tar.gz`` on Linux.
 
 ### 2. Configure the .config file of the model
-You will need to [download the .config file for the model you've choses][model configs] or you can simply [download the .config files of this repository][alex lechner model configs] if you've decided to train the images on one of the models mentioned above.
+You will need to [download the .config file for the model you've chosen][model configs] or you can simply [download the .config files of this repository][alex lechner model configs] if you've decided to train the images on one of the models mentioned above.
 
 If you want to configure them on your own there are some important changes you need to make. For this walkthrough, I will assume you are training on the Udacity Carla dataset with Faster RCNN.
 1. Change ``num_classes: 90`` to the number of labels in your ``label_map.pbtxt``. This will be ``num_classes: 4``
@@ -268,7 +269,7 @@ keep_aspect_ratio_resizer {
 
 If you don't want to use evaluation/validation in your training, simply remove those blocks from the config file. However, if you do use it make sure to set ``num_examples`` in the ``eval_config`` block to the sum of images in your .record file.
 
-You can [take a look at the configs of this repsoitory][alex lechner model configs] for reference. I've configured a few things like batch size and dropout as well. As I've mentioned earlier I've used [Vatsal's dataset][coldknight dataset] for training and my dataset for validation so don't get confused by the filename of my .record file ``jpg_udacity_train.record``.
+You can [take a look at the .config files of this repsoitory][alex lechner model configs] for reference. I've configured a few things like batch size and dropout as well. As I've mentioned earlier I've used [Vatsal's dataset][coldknight dataset] for training and my dataset for validation so don't get confused by the filename of my .record file ``jpg_udacity_train.record``.
 
 ### 3. Setup an AWS spot instance
 For training, I recommend setting up an AWS spot instance. Training will be much faster and you can train multiple models simultaneously on different spot instances (like I did):
@@ -287,10 +288,11 @@ To set up an AWS spot instance do the following steps:
 9. Click ``Launch``, wait until the instance is created and then connect to your instance via ssh
 
 ![spot instance][spot instance]
+_Left: Training Faster RCNN Inception V2 Coco, Right: Training SSD Inception V2 Coco_
 
 ### 4. Training the model
 1. When you're connected with the instance execute ``sudo apt-get update``, ``pip install --upgrade dask`` and ``pip install tensorflow-gpu==1.4`` consecutively
-2. [Setup TensorFlow for Linux][tf setup linux] (**but skip step one because we've already installed tensorflow-gpu!**)
+2. [Set up TensorFlow for Linux][tf setup linux] (**but skip step one because we've already installed tensorflow-gpu!**)
 3. Clone your classification repository and create the folders ``models`` & ``data`` if they are not tracked by your VCS.
 4. Upload the datasets to the data folder (or if you're using my dataset you can simply execute ``wget https://www.dropbox.com/s/vaniv8eqna89r20/alex-lechner-udacity-traffic-light-dataset.zip?dl=0`` in the data folder and unzip it with ``unzip alex-lechner-udacity-traffic-light-dataset.zip?dl=0``. Don't miss the ``?dl=0`` part when unzipping!)
 5. Navigate to the ``models`` folder and download your tensorflow model with ``wget http://download.tensorflow.org/models/object_detection/your_tensorflow_model.tar.gz`` and untar it with ``tar -xvzf your_tensorflow_model.tar.gz``
@@ -298,10 +300,10 @@ To set up an AWS spot instance do the following steps:
 7. Train your model by executing ``python train.py --logtostderr --train_dir=./models/train --pipeline_config_path=./config/your_tensorflow_model.config`` in the root of your project folder
 
 ### 5. Freezing the graph
-When training is finished the graph needs to get frozen. Udacity's Carla has TensorFlow Version 1.3 installed. However, the minimum version of TensorFlow needs to be Version 1.4 in order to freeze the graph but note that this does not raise any compatibility issues. 
+When training is finished the trained model needs to be exported as a frozen inference graph. Udacity's Carla has TensorFlow Version 1.3 installed. However, the minimum version of TensorFlow needs to be Version 1.4 in order to freeze the graph but note that this does not raise any compatibility issues. 
 If you've trained the graph with a higher version of TensorFlow than 1.4, don't panic! As long as you downgrade Tensorflow to version 1.4 before running the script to freeze the graph you should be fine.
 To freeze the graph:
-1. Copy ``export_inference_graph.py`` from the ``E:\projects\python\models\research\object_detection`` folder to the root of your project folder
+1. Copy ``export_inference_graph.py`` from the ``tensorflow/models/research/object_detection`` folder to the root of your project folder
 2. Execute ``python export_inference_graph.py --input_type image_tensor --pipeline_config_path ./config/your_tensorflow_model.config --trained_checkpoint_prefix ./models/train/model.ckpt-10000 --output_directory models``
 
 This will freeze and output the graph as ``frozen_inference_graph.pb``.
@@ -324,7 +326,7 @@ source: [epratheeban's answer on GitHub][epratheeban github]
 
 Go to ``tensorflow/models/research/object_detection/`` and edit the  ``exporter.py`` file. Go to line 71 and change ``optimize_tensor_layout`` to ``layout_optimizer``.
 
-If the same error course with _...has no "layout_optimizer" field._ then you must change ``layout_optimizer`` to ``optimize_tensor_layout`.
+If the same error occurs with the message _[...] has no "layout_optimizer" field._ then you have to change ``layout_optimizer`` to ``optimize_tensor_layout``.
 
 * Can't ssh into the AWS instance because of _port 22: Resource temporarily unavailable_
 
@@ -339,3 +341,16 @@ This error will probably occur when trying to execute ``sudo apt-get install pro
 sudo rm /var/lib/dpkg/lock
 sudo dpkg --configure -a
 ```
+
+## Summary
+If you are using Vatsal's and my dataset you only need to:
+1. [Download the datasets](#1-the-lazy-approach)
+2. [Set up TensorFlow **only on the training instance**, do the training and export the model][training section]
+
+If you are using your own dataset you need to:
+1. [Set up TensorFlow locally][set up tensorflow] (because of creating TFRecord files)
+2. [Create your own datasets](#2-the-diligent-approach)
+3. [Set up TensorFlow again on a training instance (if the training instance is not your local machine), do the training and export the model][training section]
+
+
+Training instance = System, where you train the TensorFlow model (probably an AWS instance and not your local machine)
