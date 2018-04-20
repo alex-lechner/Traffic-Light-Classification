@@ -34,8 +34,8 @@ The goals/steps of this project are the following:
 [training section]: #training
 [protobuf win]: https://github.com/google/protobuf/releases
 [cdahms question]: https://stackoverflow.com/questions/48247921/tensorflow-object-detection-api-on-windows-error-modulenotfounderror-no-modu
-[pythonpath win]: ./imgs/pythonpath-win.JPG
-[path variable win]: ./imgs/path-win.JPG
+[pythonpath win]: ./imgs/pythonpath-win.jpg
+[path variable win]: ./imgs/path-win.jpg
 [models zoo]: https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md
 [simultaneous training]: ./imgs/simultaneous-training.jpg
 [ssd inception]: http://download.tensorflow.org/models/object_detection/ssd_inception_v2_coco_11_06_2017.tar.gz 
