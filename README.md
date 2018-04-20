@@ -275,6 +275,7 @@ You can [take a look at the .config files of this repsoitory][alex lechner model
 For training, I recommend setting up an AWS spot instance. Training will be much faster and you can train multiple models simultaneously on different spot instances (like I did):
 
 ![simultaneous training][simultaneous training]
+_Left: Training Faster RCNN Inception V2 Coco, Right: Training SSD Inception V2 Coco_
 
 To set up an AWS spot instance do the following steps:
 1. [Login to your Amazon AWS Account][aws login]
@@ -288,7 +289,6 @@ To set up an AWS spot instance do the following steps:
 9. Click ``Launch``, wait until the instance is created and then connect to your instance via ssh
 
 ![spot instance][spot instance]
-_Left: Training Faster RCNN Inception V2 Coco, Right: Training SSD Inception V2 Coco_
 
 ### 4. Training the model
 1. When you're connected with the instance execute ``sudo apt-get update``, ``pip install --upgrade dask`` and ``pip install tensorflow-gpu==1.4`` consecutively
