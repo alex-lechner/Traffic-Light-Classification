@@ -311,6 +311,7 @@ So far you should have a TFRecord file of the dataset(s) which you have either d
 * [Faster RCNN Resnet101 Coco (11/06/2017)][faster rcnn resnet101] Pro: Highly Accurate, Con: Very slow
 
 Our team ended up using **SSD Inception V2 Coco (17/11/2017)** because it has good results for its performance.
+
 You may ask yourself why the date after the model's name is important. As I've mentioned in the [TensorFlow set up section][set up tensorflow] above, it's very important to check out a specific commit from the 'models' repository because the team has fixed broken models. That's why it is important. And if you don't want to see the following results after a very long training session I encourage you to stick to the newest models or the ones I've linked above:
 
 ![bad performance][bad performance]
@@ -430,7 +431,7 @@ SSD trained on parking lot images  |  SSD trained on simulator images
 :---------------------------------:|:---------------------------------:
 ![ssd udacity][ssd udacity]        | ![ssd simulator][ssd simulator]
 
-**[Take a look at the Jupyter Notebook][jupyter notebook] to see the results .**
+**[Take a look at the Jupyter Notebook][jupyter notebook] to see the results.**
 
 ## Troubleshooting
 In case you're running into any of the errors listed below, the solutions provided will fix it:
