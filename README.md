@@ -75,7 +75,7 @@ The goals/steps of this project are the following:
     3. [Setup an AWS spot instance](#3-setup-an-aws-spot-instance)
     4. [Training the model](#4-training-the-model)
     5. [Freezing the graph](#5-freezing-the-graph)
-5. [Recommendation: Use SSD Inception V2](#recommendation:-use-ssd-inception-v2)
+5. [Recommendation: Use SSD Inception V2](#recommendation-use-ssd-inception-v2)
     1. [Conclusion](#conclusion)
 6. [Troubleshooting](#troubleshooting)
 7. [Summary](#summary)
@@ -107,7 +107,7 @@ But enough of Google bashing - they're doing a good job but the library still ha
 I will now show you how to install the TensorFlow 'models' repository on Windows 10 and Linux. The Linux setup is easier and if you don't have a powerful GPU on your local machine I strongly recommend you to do the training on an AWS spot instance because this will save you a lot of time. However, you can do the basic stuff like data preparation and data preprocessing on your local machine but I suggest doing the training on an AWS instance. I will show you how to set up the training environment in the [Training section][training section].
 
 ### Windows 10
-1. Install TensorFlow version 1.4 by executing the follwoing statement in the Command Prompt (this assumes you have python.exe set in your PATH environment variable)
+1. Install TensorFlow version 1.4 by executing the following statement in the Command Prompt (this assumes you have python.exe set in your PATH environment variable)
     ```
     pip install tensorflow==1.4
     ```
@@ -205,16 +205,28 @@ If you have enough time, love to label images, read tutorials about traffic ligh
 #### 2.1 Extract images from a ROSbag file
 For the simulator data, my team colleague [Clifton Pereira][clifton pereira] drove around the track in the simulator and recorded a ROSbag file of his ride. Because Udacity provides the students with a ROSbag file from their Car named Carla where (our and) your capstone project will be tested on the code/procedure for extracting images will be (mostly) the same. **The steps below assume you have ros-kinetic installed either on your local machine (if you have Linux as an operating system) or in a virtual environment (if you have Windows or Mac as an operating system)**
 
-1. Open a terminal and launch ROS by executing ``roscore``
-2. Open another terminal (but do NOT close or exit the first terminal!) and play the ROSbag file by executing ``rosbag play -l your_rosbag_file.bag``
+1. Open a terminal and launch ROS 
+    ```sh
+    roscore
+    ```
+2. Open another terminal (but do NOT close or exit the first terminal!) and play the ROSbag file
+    ```sh
+    rosbag play -l path/to/your_rosbag_file.bag
+    ```
 3. Create a directory where you want to save the images
 4. Open another, third terminal and navigate to the newly created directory and... 
     
-    4.1. ...execute ``rosrun image_view image_saver _sec_per_frame:=0.01 image:=/image_color`` if you have a ROSbag file from Udacity's simulator
+    1. ...execute the following statement if you have a ROSbag file from Udacity's simulator:
+        ```sh
+        rosrun image_view image_saver _sec_per_frame:=0.01 image:=/image_color
+        ```
     
-    4.2. ...execute ``rosrun image_view image_saver _sec_per_frame:=0.01 image:=/image_raw`` if you have a ROSbag file from Udacity's Car Carla
+    2. ...execute the following statement if you have a ROSbag file from Udacity's Car Carla:
+        ```sh
+        rosrun image_view image_saver _sec_per_frame:=0.01 image:=/image_raw
+        ```
 
-As you can see the difference is the rostopic after ``image:=``.
+    As you can see the difference is the rostopic after ``image:=``.
 
 These steps will extract the (camera) images from the ROSbag file into the folder where the code is executed. Please keep in mind that the ROSbag file is in an infinite loop and won't stop when the recording originally ended so it will automatically start from the beginning. If you think you have enough data you should interrupt one of the open terminals.
 
@@ -295,7 +307,7 @@ So far you should have a TFRecord file of the dataset(s) which you have either d
 
 * [SSD Inception V2 Coco (17/11/2017)][ssd inception 171117] Pro: Very fast, Con: Not good generalization on different data
 * [SSD Inception V2 Coco (11/06/2017)][ssd inception] Pro: Very fast, Con: Not good generalization on different data
-* [Faster RCNN Inception V2 Coco (28/01/2018)][faster rcnn inception] Pro: Good precision and generalization on different data, Con: Slow
+* [Faster RCNN Inception V2 Coco (28/01/2018)][faster rcnn inception] Pro: Good precision and generalization of different data, Con: Slow
 * [Faster RCNN Resnet101 Coco (11/06/2017)][faster rcnn resnet101] Pro: Highly Accurate, Con: Very slow
 
 Our team ended up using **Faster RCNN Inception V2 Coco** because it has good results for its performance.
@@ -369,19 +381,17 @@ To set up an AWS spot instance do the following steps:
     1. If you're using my dataset you can simply execute the following statements in the ``data`` folder: 
         ```sh
         wget https://www.dropbox.com/s/vaniv8eqna89r20/alex-lechner-udacity-traffic-light-dataset.zip?dl=0
-
         unzip alex-lechner-udacity-traffic-light-dataset.zip?dl=0 ## Don't miss the ``?dl=0`` part when unzipping!
         ``` 
 
 5. Navigate to the ``models`` folder in your project folder and download your tensorflow model with 
     ```sh
     wget http://download.tensorflow.org/models/object_detection/your_tensorflow_model.tar.gz
-
     tar -xvzf your_tensorflow_model.tar.gz
     ```
 
 6. Copy the file ``train.py`` from the ``tensorflow/models/research/object_detection`` folder to the root of your project folder
-7. Train your model by executing the follwoing statement in the root of your project folder
+7. Train your model by executing the following statement in the root of your project folder
     ```
     python train.py --logtostderr --train_dir=./models/train --pipeline_config_path=./config/your_tensorflow_model.config
     ```
@@ -396,14 +406,14 @@ To freeze the graph:
     python export_inference_graph.py --input_type image_tensor --pipeline_config_path ./config/your_tensorflow_model.config --trained_checkpoint_prefix ./models/train/model.ckpt-10000 --output_directory models
     ```
 
-This will freeze and output the graph as ``frozen_inference_graph.pb``.
+    This will freeze and output the graph as ``frozen_inference_graph.pb``.
 
 ## Recommendation: Use SSD Inception V2
-At first, our team was using Faster RCNN Inception V2 model. This model takes about 2.9 seconds to classify images which - besides the name of the model - not that fast. The advantage about training the Faster RCNN Inception V2 is the generalization of the model to new, unseen images which means the model was only trained on the image data of Udacity's parking lot and was able to classify the light state of the traffic lights in the simulator. So why did we change the model to SSD Inception? 
+At first, our team was using Faster RCNN Inception V2 model. This model takes about 2.9 seconds to classify images which is - besides the name of the model - not that fast. The advantage about training the Faster RCNN Inception V2 is the generalization of the model to new, different & unseen images which means the model was only trained on the image data of Udacity's parking lot and was able to classify the light state of the traffic lights in the simulator too. So why did we change the model to SSD Inception V2? 
 
-Our code was successfully tested on Carla but it failed in the simulator. This might sound funny - and it actually is - but the reason why it failed is because the reviewers from Udacity set the light changing frequency of the simulator ridiculously high so the light was changing every 2 - 3 seconds. The configuration of our traffic light detector node in our project is set to 3 consecutive images of traffic lights until the final state (Red, Green, Yellow or Unknown) and the according action is received from the agent/car. That's the reason why we changed the model from Faster RCNN Inception V2 to SSD Inception V2.
+Our code was successfully tested on Carla but it failed in the simulator. This might sound funny - and it actually is - but the reason why it failed is that the frequency of changing lights in the simulator is set ridiculously high so the light was changing every 2 - 3 seconds. The configuration of our traffic light detector node in our project is set to 3 consecutive images of traffic lights until the final state (Red, Green, Yellow or Unknown) and action is passed to the agent/car. That's the reason why we changed the model from Faster RCNN Inception V2 to SSD Inception V2.
 
-The good thing about SSD Inception V2 is it's speed and performance. Sometimes the SSD model misses and image but in general it is doing a good job forit's performance. However, unlike the Faster RCNN Inception V2 the model does not a good job on classifying new, different images. For example, I've trained the SSD model first on Udacity's parking lot data with 10.000 steps and it did a good job on classifying the parking lot traffic lights but did not classify a single image from the simulator data. After the training, I did transfer learning on the simulator data with 10.000 steps. After the training something interesting happend: The model was able to classify the simulator data BUT the model "forgot" about its training on the Udacity parking lot data and therefore only classified 2 out of 10 images from the Udacity parking lot dataset.
+The good thing about SSD Inception V2 is its speed and performance. Sometimes the SSD model misses to classify an image with over 50% certainty but in general, it is doing a good job for its performance. However, unlike the Faster RCNN Inception V2 the model does not a good job of classifying new, different images. For example, I've trained the SSD model first on Udacity's parking lot data with 10.000 steps and it did a good job on classifying the parking lot traffic lights but the model did not classify a single image from the simulator data. After the training, I did transfer learning on the simulator data with 10.000 steps as well. After the training something interesting happened: The model was able to classify the simulator data BUT the model "forgot" about its previous training on the Udacity parking lot data and therefore only classified 2 out of 10 images from the Udacity parking lot dataset.
 
 ### Conclusion
 Our team is using now 2 trained SSD Inception V2 models for [our Capstone project][capstone project]:
@@ -411,7 +421,7 @@ Our team is using now 2 trained SSD Inception V2 models for [our Capstone projec
 * 1 SSD model for real-world data
 * 1 SSD model for simulator data
   
-If you are using this approach as well I recommend you to train 2 SSD models simultaneously on an [AWS instance](#3-setup-an-aws-spot-instance). Because the SSD model "forgets" about the old trained data you don't have to do transfer learning and you can safely train 1 model on simulator data and 1 model on real-world data seperately (and simultaneously) which will save you tremendous amount of time.
+If you are using this approach as well I recommend you to train 2 SSD models simultaneously on an [AWS instance](#3-setup-an-aws-spot-instance). Because the SSD model "forgets" about the old trained data you don't have to do transfer learning and you can safely train 1 model on simulator data and 1 model on real-world data separately (and simultaneously) which will save you a tremendous amount of time.
 
 SSD trained on parking lot images  |  SSD trained on simulator images
 :---------------------------------:|:---------------------------------:
