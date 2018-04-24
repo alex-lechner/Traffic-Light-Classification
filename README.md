@@ -310,7 +310,7 @@ So far you should have a TFRecord file of the dataset(s) which you have either d
 * [Faster RCNN Inception V2 Coco (28/01/2018)][faster rcnn inception] Pro: Good precision and generalization of different data, Con: Slow
 * [Faster RCNN Resnet101 Coco (11/06/2017)][faster rcnn resnet101] Pro: Highly Accurate, Con: Very slow
 
-Our team ended up using **Faster RCNN Inception V2 Coco** because it has good results for its performance.
+Our team ended up using **SSD Inception V2 Coco (17/11/2017)** because it has good results for its performance.
 You may ask yourself why the date after the model's name is important. As I've mentioned in the [TensorFlow set up section][set up tensorflow] above, it's very important to check out a specific commit from the 'models' repository because the team has fixed broken models. That's why it is important. And if you don't want to see the following results after a very long training session I encourage you to stick to the newest models or the ones I've linked above:
 
 ![bad performance][bad performance]
@@ -335,12 +335,14 @@ If you want to configure them on your own there are some important changes you n
 For Faster RCNN Inception V2:
 
 1. Change the default ``min_dimension: 600`` and ``max_dimension: 1024`` values to the minimum value (height) and the maximum value (width) of your images like so
+
     ```
     keep_aspect_ratio_resizer {
         min_dimension: 1096
         max_dimension: 1368
     }
     ```
+
 2. You can increase ``batch_size: 1`` to ``batch_size: 3`` or even higher
 
 
@@ -379,6 +381,7 @@ To set up an AWS spot instance do the following steps:
 3. Clone your classification repository and create the folders ``models`` & ``data`` (in your project folder) if they are not tracked by your VCS.
 4. Upload the datasets to the ``data`` folder 
     1. If you're using my dataset you can simply execute the following statements in the ``data`` folder: 
+
         ```sh
         wget https://www.dropbox.com/s/vaniv8eqna89r20/alex-lechner-udacity-traffic-light-dataset.zip?dl=0
         unzip alex-lechner-udacity-traffic-light-dataset.zip?dl=0 ## Don't miss the ``?dl=0`` part when unzipping!
@@ -401,7 +404,7 @@ When training is finished the trained model needs to be exported as a frozen inf
 If you've trained the graph with a higher version of TensorFlow than 1.4, don't panic! As long as you downgrade Tensorflow to version 1.4 before running the script to freeze the graph you should be fine.
 To freeze the graph:
 1. Copy ``export_inference_graph.py`` from the ``tensorflow/models/research/object_detection`` folder to the root of your project folder
-2. Execute 
+2. Now freeze the graph by executing
     ```
     python export_inference_graph.py --input_type image_tensor --pipeline_config_path ./config/your_tensorflow_model.config --trained_checkpoint_prefix ./models/train/model.ckpt-10000 --output_directory models
     ```
