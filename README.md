@@ -39,6 +39,7 @@ The goals/steps of this project are the following:
 [models zoo]: https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md
 [simultaneous training]: ./imgs/simultaneous-training.jpg
 [ssd inception]: http://download.tensorflow.org/models/object_detection/ssd_inception_v2_coco_11_06_2017.tar.gz 
+[ssd inception 171117]: http://download.tensorflow.org/models/object_detection/ssd_inception_v2_coco_2017_11_17.tar.gz
 [faster rcnn inception]: http://download.tensorflow.org/models/object_detection/faster_rcnn_inception_v2_coco_2018_01_28.tar.gz
 [faster rcnn resnet101]: http://download.tensorflow.org/models/object_detection/faster_rcnn_resnet101_coco_11_06_2017.tar.gz
 [bad performance]: ./imgs/tf-bad-performance.jpg
@@ -50,6 +51,10 @@ The goals/steps of this project are the following:
 [tf setup linux]: #linux
 [epratheeban github]: https://github.com/EdjeElectronics/TensorFlow-Object-Detection-API-Tutorial-Train-Multiple-Objects-Windows-10/issues/11
 [aws inbound rules]: ./imgs/aws-inbound-rules.jpg
+[kill memory]: ./imgs/kill-process.jpg
+[ssd udacity]: ./imgs/ssd-udacity-image.jpg
+[ssd simulator]: ./imgs/ssd-simulator-image.jpg
+[jupyter notebook]: ./tl_classification.ipynb
 
 ---
 
@@ -70,8 +75,10 @@ The goals/steps of this project are the following:
     3. [Setup an AWS spot instance](#3-setup-an-aws-spot-instance)
     4. [Training the model](#4-training-the-model)
     5. [Freezing the graph](#5-freezing-the-graph)
-5. [Troubleshooting](#troubleshooting)
-6. [Summary](#summary)
+5. [Recommendation: Use SSD Inception V2](#recommendation:-use-ssd-inception-v2)
+    1. [Conclusion](#conclusion)
+6. [Troubleshooting](#troubleshooting)
+7. [Summary](#summary)
 
 
 ## Introduction
@@ -85,24 +92,48 @@ I will now try to cover up all steps necessary from the beginning to the end to 
 **If you run into any errors during this tutorial (and you probably will) please check the [Troubleshooting section](#troubleshooting).**
 
 ## Set up TensorFlow
-If a technical recruiter ever asks me _"Describe the toughest technical problem you've worked on."_ my answer definitely will be _"Get TensorFlow to work!"_. Seriously, if someone from the TensorFlow team is reading this: Clean up your folder structure, use descriptive folder names, merge your READMEs and - more importantly - **fix your library!!!**
+If a technical recruiter ever asks me:
+
+>_"Describe the toughest technical problem you've worked on."_
+
+my answer definitely will be:
+
+> _"Get TensorFlow to work!"_
+
+Seriously, if someone from the TensorFlow team is reading this: Clean up your folder structure, use descriptive folder names, merge your READMEs and - more importantly - **fix your library!!!**
 
 But enough of Google bashing - they're doing a good job but the library still has teething troubles (and an user-**un**friendly installation setup).
 
 I will now show you how to install the TensorFlow 'models' repository on Windows 10 and Linux. The Linux setup is easier and if you don't have a powerful GPU on your local machine I strongly recommend you to do the training on an AWS spot instance because this will save you a lot of time. However, you can do the basic stuff like data preparation and data preprocessing on your local machine but I suggest doing the training on an AWS instance. I will show you how to set up the training environment in the [Training section][training section].
 
 ### Windows 10
-1. Install TensorFlow version 1.4 by executing ``pip install tensorflow==1.4`` in the Command Prompt (this assumes you have python.exe set in your PATH environment variable)
-2. Install the following python packages: ``pip install pillow lxml matplotlib``
+1. Install TensorFlow version 1.4 by executing the follwoing statement in the Command Prompt (this assumes you have python.exe set in your PATH environment variable)
+    ```
+    pip install tensorflow==1.4
+    ```
+2. Install the following python packages 
+    ```
+    pip install pillow lxml matplotlib
+    ```
 3. [Download protoc-3.4.0-win32.zip from the Protobuf repository][protobuf win] (It must be version 3.4.0!)
 4. Extract the Protobuf .zip file e.g. to ``C:\Program Files\protoc-3.4.0-win32``
 5. Create a new directory somewhere and name it ``tensorflow``
-6. Clone TensorFlow's 'models' repository in the ``tensorflow`` directory by executing ``git clone https://github.com/tensorflow/models.git``
-7. Navigate to the ``models`` directory in the Command Prompt and execute ``git checkout f7e99c0 ``
+6. Clone TensorFlow's *models* repository from the ``tensorflow`` directory by executing 
+    ```
+    git clone https://github.com/tensorflow/models.git
+    ```
+7. Navigate to the ``models`` directory in the Command Prompt and execute 
+    ```
+    git checkout f7e99c0
+    ```
 
-This is important because the code from the ``master`` branch won't work with TensorFlow version 1.4. Also, this commit has already fixed broken models from previous commits.
+    This is important because the code from the ``master`` branch won't work with TensorFlow version 1.4. Also, this commit has already fixed broken models from previous commits.
 
-8. Navigate to the ``research`` folder and execute ``“C:\Program Files\protoc-3.4.0-win32\bin\protoc.exe” object_detection/protos/*.proto --python_out=.`` (The quotation marks are needed!)
+8. Navigate to the ``research`` folder and execute 
+    ```cmd
+    ## The quotation marks are needed!
+    “C:\Program Files\protoc-3.4.0-win32\bin\protoc.exe” object_detection/protos/*.proto --python_out=. 
+    ```
 9. If step 8 executed without any error then execute ``python builders/model_builder_test.py``
 10. In order to access the modules from the research folder from anywhere, the ``models``, ``models/research``, ``models/research/slim`` & ``models/research/object_detection`` folders need to be set as PATH variables like so:
 
@@ -117,17 +148,36 @@ This is important because the code from the ``master`` branch won't work with Te
 Source: [cdahms' question/tutorial on Stackoverflow][cdahms question].
 
 ### Linux
-1. Install TensorFlow version 1.4 by executing ``pip install tensorflow==1.4``
-2. Install the following packages: ``sudo apt-get install protobuf-compiler python-pil python-lxml python-tk``
+1. Install TensorFlow version 1.4 by executing 
+    ```
+    pip install tensorflow==1.4
+    ```
+2. Install the following packages 
+    ```
+    sudo apt-get install protobuf-compiler python-pil python-lxml python-tk
+    ```
 3. Create a new directory somewhere and name it ``tensorflow``
-4. Clone TensorFlow's 'models' repository in the ``tensorflow`` directory by executing ``git clone https://github.com/tensorflow/models.git`
-5. Navigate to the ``models`` directory in the Command Prompt and execute ``git checkout f7e99c0 ``
+4. Clone TensorFlow's *models* repository from the ``tensorflow`` directory by executing 
+    ```
+    git clone https://github.com/tensorflow/models.git
+    ```
+5. Navigate to the ``models`` directory in the Command Prompt and execute 
+    ```
+    git checkout f7e99c0
+    ```
 
-This is important because the code from the ``master`` branch won't work with TensorFlow version 1.4. Also, this commit has already fixed broken models from previous commits.
+    This is important because the code from the ``master`` branch won't work with TensorFlow version 1.4. Also, this commit has already fixed broken models from previous commits.
 
-6.  Navigate to the ``research`` folder and execute ``protoc object_detection/protos/*.proto --python_out=.``
-7.  Now execute ``export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim``
-8.  If the steps 6 & 7 executed without any errors then execute ``python object_detection/builders/model_builder_test.py``
+6.  Navigate to the ``research`` folder and execute 
+    ```
+    protoc object_detection/protos/*.proto --python_out=.
+
+    export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim
+    ```
+7.  If the step 6 executed without any errors then execute 
+    ```
+    python object_detection/builders/model_builder_test.py
+    ```
 
 ## Datasets
 As always in deep learning: Before you start coding you need to gather the right datasets. For this project, you will need images of traffic lights with labeled bounding boxes.
@@ -194,9 +244,15 @@ Please keep in mind that your ``label_map.pbtxt`` file can have more than 4 labe
 
 In case you are using the dataset from Bosch, all labels and bounding boxes are stored in a .yaml file instead of a .xml file. If you are developing your own script to create a TFRecord file you will have to take care of this. If you are using my script I will now explain how to execute it and what it does:
 
-For datasets with **.yaml** files (e.g.: Bosch dataset) execute: ``python create_tf_record.py --data_dir=path/to/your/data.yaml --output_path=your/path/filename.record --label_map_path=path/to/your/label_map.pbtxt``
+For datasets with **.yaml** files (e.g.: Bosch dataset) execute: 
+```
+python create_tf_record.py --data_dir=path/to/your/data.yaml --output_path=your/path/filename.record --label_map_path=path/to/your/label_map.pbtxt
+```
 
-For datasets with **.xml** files execute: ``python create_tf_record.py --data_dir=path/to/green/lights,path/to/red/lights,path/to/yellow/lights --annotations_dir=labels --output_path=your/path/filename.record --label_map_path=path/to/your/label_map.pbtxt``
+For datasets with **.xml** files execute: 
+```
+python create_tf_record.py --data_dir=path/to/green/lights,path/to/red/lights,path/to/yellow/lights --annotations_dir=labels --output_path=your/path/filename.record --label_map_path=path/to/your/label_map.pbtxt
+```
 
 You will know that everything worked fine if your .record file has nearly the same size as the sum of the size of your images. Also, you have to execute this script for your training set, your validation set (if you have one) and your test set separately.
 
@@ -236,8 +292,10 @@ path/to
 
 ### 1. Choosing a model
 So far you should have a TFRecord file of the dataset(s) which you have either downloaded or created by yourself. Now it's time to select a model which you will train. You can [see the stats of and download the Tensorflow models from the model zoo][models zoo]. In sum I've trained 3 TensorFlow models and compared them based on their performance and precision:
-* [SSD Inception V2 Coco (11/06/2017)][ssd inception] Pro: Very fast, Con: Low precision
-* [Faster RCNN Inception V2 Coco (28/01/2018)][faster rcnn inception] Pro: Good precision, Con: Slow
+
+* [SSD Inception V2 Coco (17/11/2017)][ssd inception 171117] Pro: Very fast, Con: Not good generalization on different data
+* [SSD Inception V2 Coco (11/06/2017)][ssd inception] Pro: Very fast, Con: Not good generalization on different data
+* [Faster RCNN Inception V2 Coco (28/01/2018)][faster rcnn inception] Pro: Good precision and generalization on different data, Con: Slow
 * [Faster RCNN Resnet101 Coco (11/06/2017)][faster rcnn resnet101] Pro: Highly Accurate, Con: Very slow
 
 Our team ended up using **Faster RCNN Inception V2 Coco** because it has good results for its performance.
@@ -252,20 +310,27 @@ After you've downloaded a model, create a new folder e.g. ``models`` and unpack 
 ### 2. Configure the .config file of the model
 You will need to [download the .config file for the model you've chosen][model configs] or you can simply [download the .config files of this repository][alex lechner model configs] if you've decided to train the images on one of the models mentioned above.
 
-If you want to configure them on your own there are some important changes you need to make. For this walkthrough, I will assume you are training on the Udacity Carla dataset with Faster RCNN.
+If you want to configure them on your own there are some important changes you need to make. For this walkthrough, I will assume you are training on the Udacity Carla dataset with ~~Faster RCNN Inception V2~~ SSD Inception V2.
+
+**TensorFlow model configs might differ but the following steps below are the same for every model!**
+
 1. Change ``num_classes: 90`` to the number of labels in your ``label_map.pbtxt``. This will be ``num_classes: 4``
-2. Change the default ``min_dimension: 600`` and ``max_dimension: 1024`` values to the minimum value (height) and the maximum value (width) of your images like so
-```
-keep_aspect_ratio_resizer {
-    min_dimension: 1096
-    max_dimension: 1368
-}
-```
-3. Set the default ``max_detections_per_class: 100`` and ``max_total_detections: 300`` values to a lower value for example ``max_detections_per_class: 10`` and ``max_total_detections: 10``
-4. You can increase ``batch_size: 1`` to ``batch_size: 3`` or even higher
-5. Change ``fine_tune_checkpoint: "PATH_TO_BE_CONFIGURED/model.ckpt"`` to the directory where your downloaded model is stored e.g.: ``fine_tune_checkpoint: "models/your_tensorflow_model/model.ckpt"``
-6. Set ``num_steps: 200000`` down to ``num_steps: 10000``
-7. Change the ``PATH_TO_BE_CONFIGURED`` placeholders in ``input_path`` and ``label_map_path`` to your .record file(s) and ``label_map.pbtxt``
+2. Set the default ``max_detections_per_class: 100`` and ``max_total_detections: 300`` values to a lower value for example ``max_detections_per_class: 10`` and ``max_total_detections: 10``
+4. Change ``fine_tune_checkpoint: "PATH_TO_BE_CONFIGURED/model.ckpt"`` to the directory where your downloaded model is stored e.g.: ``fine_tune_checkpoint: "models/your_tensorflow_model/model.ckpt"``
+5. Set ``num_steps: 200000`` down to ``num_steps: 10000``
+6. Change the ``PATH_TO_BE_CONFIGURED`` placeholders in ``input_path`` and ``label_map_path`` to your .record file(s) and ``label_map.pbtxt``
+
+For Faster RCNN Inception V2:
+
+1. Change the default ``min_dimension: 600`` and ``max_dimension: 1024`` values to the minimum value (height) and the maximum value (width) of your images like so
+    ```
+    keep_aspect_ratio_resizer {
+        min_dimension: 1096
+        max_dimension: 1368
+    }
+    ```
+2. You can increase ``batch_size: 1`` to ``batch_size: 3`` or even higher
+
 
 If you don't want to use evaluation/validation in your training, simply remove those blocks from the config file. However, if you do use it make sure to set ``num_examples`` in the ``eval_config`` block to the sum of images in your .record file.
 
@@ -291,22 +356,68 @@ To set up an AWS spot instance do the following steps:
 ![spot instance][spot instance]
 
 ### 4. Training the model
-1. When you're connected with the instance execute ``sudo apt-get update``, ``pip install --upgrade dask`` and ``pip install tensorflow-gpu==1.4`` consecutively
+1. When you're connected with the instance execute the following statements consecutively:
+    ```sh
+    sudo apt-get update
+    pip install --upgrade dask
+    pip install tensorflow-gpu==1.4
+    ```
+
 2. [Set up TensorFlow for Linux][tf setup linux] (**but skip step one because we've already installed tensorflow-gpu!**)
-3. Clone your classification repository and create the folders ``models`` & ``data`` if they are not tracked by your VCS.
-4. Upload the datasets to the data folder (or if you're using my dataset you can simply execute ``wget https://www.dropbox.com/s/vaniv8eqna89r20/alex-lechner-udacity-traffic-light-dataset.zip?dl=0`` in the data folder and unzip it with ``unzip alex-lechner-udacity-traffic-light-dataset.zip?dl=0``. Don't miss the ``?dl=0`` part when unzipping!)
-5. Navigate to the ``models`` folder and download your tensorflow model with ``wget http://download.tensorflow.org/models/object_detection/your_tensorflow_model.tar.gz`` and untar it with ``tar -xvzf your_tensorflow_model.tar.gz``
-6. Copy the file ``train.py`` from the ``tensorflow/projects/python/models/research/object_detection`` folder to the root of your project folder
-7. Train your model by executing ``python train.py --logtostderr --train_dir=./models/train --pipeline_config_path=./config/your_tensorflow_model.config`` in the root of your project folder
+3. Clone your classification repository and create the folders ``models`` & ``data`` (in your project folder) if they are not tracked by your VCS.
+4. Upload the datasets to the ``data`` folder 
+    1. If you're using my dataset you can simply execute the following statements in the ``data`` folder: 
+        ```sh
+        wget https://www.dropbox.com/s/vaniv8eqna89r20/alex-lechner-udacity-traffic-light-dataset.zip?dl=0
+
+        unzip alex-lechner-udacity-traffic-light-dataset.zip?dl=0 ## Don't miss the ``?dl=0`` part when unzipping!
+        ``` 
+
+5. Navigate to the ``models`` folder in your project folder and download your tensorflow model with 
+    ```sh
+    wget http://download.tensorflow.org/models/object_detection/your_tensorflow_model.tar.gz
+
+    tar -xvzf your_tensorflow_model.tar.gz
+    ```
+
+6. Copy the file ``train.py`` from the ``tensorflow/models/research/object_detection`` folder to the root of your project folder
+7. Train your model by executing the follwoing statement in the root of your project folder
+    ```
+    python train.py --logtostderr --train_dir=./models/train --pipeline_config_path=./config/your_tensorflow_model.config
+    ```
 
 ### 5. Freezing the graph
 When training is finished the trained model needs to be exported as a frozen inference graph. Udacity's Carla has TensorFlow Version 1.3 installed. However, the minimum version of TensorFlow needs to be Version 1.4 in order to freeze the graph but note that this does not raise any compatibility issues. 
 If you've trained the graph with a higher version of TensorFlow than 1.4, don't panic! As long as you downgrade Tensorflow to version 1.4 before running the script to freeze the graph you should be fine.
 To freeze the graph:
 1. Copy ``export_inference_graph.py`` from the ``tensorflow/models/research/object_detection`` folder to the root of your project folder
-2. Execute ``python export_inference_graph.py --input_type image_tensor --pipeline_config_path ./config/your_tensorflow_model.config --trained_checkpoint_prefix ./models/train/model.ckpt-10000 --output_directory models``
+2. Execute 
+    ```
+    python export_inference_graph.py --input_type image_tensor --pipeline_config_path ./config/your_tensorflow_model.config --trained_checkpoint_prefix ./models/train/model.ckpt-10000 --output_directory models
+    ```
 
 This will freeze and output the graph as ``frozen_inference_graph.pb``.
+
+## Recommendation: Use SSD Inception V2
+At first, our team was using Faster RCNN Inception V2 model. This model takes about 2.9 seconds to classify images which - besides the name of the model - not that fast. The advantage about training the Faster RCNN Inception V2 is the generalization of the model to new, unseen images which means the model was only trained on the image data of Udacity's parking lot and was able to classify the light state of the traffic lights in the simulator. So why did we change the model to SSD Inception? 
+
+Our code was successfully tested on Carla but it failed in the simulator. This might sound funny - and it actually is - but the reason why it failed is because the reviewers from Udacity set the light changing frequency of the simulator ridiculously high so the light was changing every 2 - 3 seconds. The configuration of our traffic light detector node in our project is set to 3 consecutive images of traffic lights until the final state (Red, Green, Yellow or Unknown) and the according action is received from the agent/car. That's the reason why we changed the model from Faster RCNN Inception V2 to SSD Inception V2.
+
+The good thing about SSD Inception V2 is it's speed and performance. Sometimes the SSD model misses and image but in general it is doing a good job forit's performance. However, unlike the Faster RCNN Inception V2 the model does not a good job on classifying new, different images. For example, I've trained the SSD model first on Udacity's parking lot data with 10.000 steps and it did a good job on classifying the parking lot traffic lights but did not classify a single image from the simulator data. After the training, I did transfer learning on the simulator data with 10.000 steps. After the training something interesting happend: The model was able to classify the simulator data BUT the model "forgot" about its training on the Udacity parking lot data and therefore only classified 2 out of 10 images from the Udacity parking lot dataset.
+
+### Conclusion
+Our team is using now 2 trained SSD Inception V2 models for [our Capstone project][capstone project]:
+
+* 1 SSD model for real-world data
+* 1 SSD model for simulator data
+  
+If you are using this approach as well I recommend you to train 2 SSD models simultaneously on an [AWS instance](#3-setup-an-aws-spot-instance). Because the SSD model "forgets" about the old trained data you don't have to do transfer learning and you can safely train 1 model on simulator data and 1 model on real-world data seperately (and simultaneously) which will save you tremendous amount of time.
+
+SSD trained on parking lot images  |  SSD trained on simulator images
+:---------------------------------:|:---------------------------------:
+![ssd udacity][ssd udacity]        | ![ssd simulator][ssd simulator]
+
+**[Take a look at the Jupyter Notebook][jupyter notebook] to see the results .**
 
 ## Troubleshooting
 In case you're running into any of the errors listed below, the solutions provided will fix it:
@@ -341,6 +452,15 @@ This error will probably occur when trying to execute ``sudo apt-get install pro
 sudo rm /var/lib/dpkg/lock
 sudo dpkg --configure -a
 ```
+
+* _tensorflow.python.framework.errors_impl.InternalError: Dst tensor is not initialized._
+
+This error occurs when you don't have enough free available memory on your GPU to train. To fix this execute ``sudo fuser -v /dev/nvidia*`` and look for the process that is currently using your memory from the GPU.
+
+![kill memory][kill memory]
+
+Then kill the process by executing ``sudo kill -9 <PID-to-kill>``
+
 
 ## Summary
 If you are using Vatsal's and my dataset you only need to:
