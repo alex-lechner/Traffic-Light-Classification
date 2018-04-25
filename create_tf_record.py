@@ -37,6 +37,23 @@ def png_to_jpeg(png_file, jpeg_file):
     rgb_im.save(jpeg_file, 'JPEG')
 
 
+def create_jpg_imgs(image_path):
+    # create jpeg subdirectory
+    jpeg_dir = os.path.join(os.path.dirname(image_path), 'jpeg')
+    if not os.path.exists(jpeg_dir):
+        os.makedirs(jpeg_dir)
+
+    if image_path.split('.')[-1].lower() == 'png':
+        png_file = image_path
+        image_path = image_path.replace(
+            os.path.dirname(image_path), jpeg_dir)
+        image_path = image_path.replace('.png', '.jpg')
+        # convert images to jpeg if they don't already exist
+        if not os.path.isfile(image_path):
+            png_to_jpeg(png_file, image_path)
+    return image_path
+
+
 def get_imgs_from_yaml(input_yaml, riib=False):
     """ Gets all labels within label file
     Note that RGB images are 1280x720 and RIIB images are 1280x736.
@@ -65,19 +82,7 @@ def get_imgs_from_yaml(input_yaml, riib=False):
                 box['y_max'] = box['y_max'] + 8
                 box['y_min'] = box['y_min'] + 8
 
-        # create jpeg subdirectory
-        jpeg_dir = os.path.join(os.path.dirname(image['path']), 'jpeg')
-        if not os.path.exists(jpeg_dir):
-            os.makedirs(jpeg_dir)
-
-        if image['path'].split('.')[-1].lower() == 'png':
-            png_file = image['path']
-            image['path'] = image['path'].replace(
-                os.path.dirname(image['path']), jpeg_dir)
-            image['path'] = image['path'].replace('.png', '.jpg')
-            # convert images to jpeg if they don't already exist
-            if not os.path.isfile(image['path']):
-                png_to_jpeg(png_file, image['path'])
+        image['path'] = create_jpg_imgs(image['path'])
 
     return images
 
@@ -194,16 +199,20 @@ def main(_):
         else:
             ## FOR XML
             annotations_dir = os.path.join(dataset, FLAGS.annotations_dir)
-            examples_list = [name.split('.')[0] for name in os.listdir(
+            examples_list = [os.path.splitext(name)[0] for name in os.listdir(
                 dataset) if os.path.isfile(os.path.join(dataset, name))]
             for example in examples_list:
                 path = os.path.join(annotations_dir, example + '.xml')
                 with tf.gfile.GFile(path, 'r') as fid:
                     xml_str = fid.read()
                 xml = etree.fromstring(xml_str)
-                data = dataset_util.recursive_parse_xml_to_dict(xml)['annotation']
-                # convert the path so the current file directory
-                data['path'] = os.path.join(os.path.abspath(dataset), os.path.basename(data['path']))
+                data = dataset_util.recursive_parse_xml_to_dict(xml)[
+                    'annotation']
+                # convert the path to the current file directory
+                data['path'] = os.path.join(os.path.abspath(
+                    dataset), os.path.basename(data['path']))
+
+                data['path'] = create_jpg_imgs(data['path'])
 
                 tf_example = create_tf_record(
                     data, label_map_dict, ignore_difficult_instances=FLAGS.ignore_difficult_instances)
