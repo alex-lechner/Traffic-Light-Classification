@@ -330,7 +330,7 @@ If you want to configure them on your own there are some important changes you n
 1. Change ``num_classes: 90`` to the number of labels in your ``label_map.pbtxt``. This will be ``num_classes: 4``
 2. Set the default ``max_detections_per_class: 100`` and ``max_total_detections: 300`` values to a lower value for example ``max_detections_per_class: 10`` and ``max_total_detections: 10``
 4. Change ``fine_tune_checkpoint: "PATH_TO_BE_CONFIGURED/model.ckpt"`` to the directory where your downloaded model is stored e.g.: ``fine_tune_checkpoint: "models/your_tensorflow_model/model.ckpt"``
-5. Set ``num_steps: 200000`` down to ``num_steps: 10000``
+5. Set ``num_steps: 200000`` down to ``num_steps: 20000``
 6. Change the ``PATH_TO_BE_CONFIGURED`` placeholders in ``input_path`` and ``label_map_path`` to your .record file(s) and ``label_map.pbtxt``
 
 For Faster RCNN Inception V2:
@@ -407,7 +407,7 @@ To freeze the graph:
 1. Copy ``export_inference_graph.py`` from the ``tensorflow/models/research/object_detection`` folder to the root of your project folder
 2. Now freeze the graph by executing
     ```
-    python export_inference_graph.py --input_type image_tensor --pipeline_config_path ./config/your_tensorflow_model.config --trained_checkpoint_prefix ./models/train/model.ckpt-10000 --output_directory models
+    python export_inference_graph.py --input_type image_tensor --pipeline_config_path ./config/your_tensorflow_model.config --trained_checkpoint_prefix ./models/train/model.ckpt-20000 --output_directory models
     ```
 
     This will freeze and output the graph as ``frozen_inference_graph.pb``.
@@ -432,6 +432,8 @@ SSD trained on parking lot images  |  SSD trained on simulator images
 ![ssd udacity][ssd udacity]        | ![ssd simulator][ssd simulator]
 
 **[Take a look at the Jupyter Notebook][jupyter notebook] to see the results.**
+
+**UPDATE:** At first, I've trained both SSD models with "only" 10.000 steps and the results were okay. In order to have better results, I've trained it for another 10.000 steps so I'd recommend training both models with 20.000 steps in sum. To give you an example: Both SSD models had a problem to classify traffic lights which were far away in the first 10.000 steps session. After training them for another 10.000 steps this problem was solved (and they had a higher certainty in classifying the light state as well).
 
 ## Troubleshooting
 In case you're running into any of the errors listed below, the solutions provided will fix it:
