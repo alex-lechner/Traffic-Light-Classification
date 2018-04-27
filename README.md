@@ -28,6 +28,7 @@ The goals/steps of this project are the following:
 [tf bad perfomance]: ./imgs/tf-bad-performance
 [tfrecord file]: #23-create-a-tfrecord-file
 [clifton pereira]: https://github.com/ExtEng
+[ian burris]: https://github.com/iburris
 [label map]: ./data/udacity_label_map.pbtxt
 [set up tensorflow]: #set-up-tensorflow
 [create_tf_record]: create_tf_record.py
@@ -203,7 +204,7 @@ My dataset is a little sparse (at least the amount of yellow traffic lights is s
 If you have enough time, love to label images, read tutorials about traffic light classification before this one or want to gather more data, then this is the way to go:
 
 #### 2.1 Extract images from a ROSbag file
-For the simulator data, my team colleague [Clifton Pereira][clifton pereira] drove around the track in the simulator and recorded a ROSbag file of his ride. Because Udacity provides the students with a ROSbag file from their Car named Carla where (our and) your capstone project will be tested on the code/procedure for extracting images will be (mostly) the same. **The steps below assume you have ros-kinetic installed either on your local machine (if you have Linux as an operating system) or in a virtual environment (if you have Windows or Mac as an operating system)**
+For the simulator data, my team colleagues [Clifton Pereira][clifton pereira] and [Ian Burris][ian burris] drove around the track in the simulator and recorded a ROSbag file of their rides. Because Udacity provides the students with a ROSbag file from their Car named Carla where (our and) your capstone project will be tested on the code/procedure for extracting images will be (mostly) the same. **The steps below assume you have ros-kinetic installed either on your local machine (if you have Linux as an operating system) or in a virtual environment (if you have Windows or Mac as an operating system)**
 
 1. Open a terminal and launch ROS 
     ```sh
